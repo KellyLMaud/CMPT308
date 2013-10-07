@@ -1,6 +1,6 @@
  --Kelly Maud
  --Homework 3
- --Version 1
+ --Version 2
  
  --1
  --Get the cities of agents booking an order for customer c002. Use a subquery.
@@ -36,6 +36,12 @@
  --4
  --Get the pids of products ordered through any agent who makes at least 
  --one order for a customer in Kyoto. Use joins.
+ SELECT DISTINCT o2.pid
+ FROM orders o, customers c, orders  o2
+ WHERE o.cid = c.cid
+   AND o.aid = o2.aid
+   AND c.city = 'Kyoto'
+ ORDER BY pid ASC; 
  
  --5
  --Get the names of customers who have never placed an order. Use a subquery.
@@ -70,12 +76,13 @@
  --of the city, regardless of whether or not the customer has ever placed 
  --an order with that agent.
  SELECT c.city, 
-        c.name, 
- 	   a.name
+        c.name AS "Customer Name", 
+ 	   a.name AS "Agent Name"
  FROM customers c,
       agents a
  WHERE a.city = c.city
  ORDER BY c.city ASC;
+ 
  --9
  --Get the name and city of customers who live in the city where the least 
  --number of products are made.
@@ -91,10 +98,26 @@
  --10
  --Get the name and city of customers who live in a city where the most 
  --number of products are made.
+ SELECT c.name, 
+        c.city
+ FROM customers c 
+ WHERE c.city = (SELECT city 
+ 				FROM products 
+ 				WHERE quantity = (SELECT MAX(quantity) 
+ 								  FROM products))
+ ORDER BY c.city ASC;
  
  --11
  --Get the name and city of customers who live in any city where the most 
  --number of products are made.
+ SELECT c.name, 
+        c.city
+ FROM customers c 
+ WHERE c.city = (SELECT city 
+ 				FROM products 
+ 				WHERE quantity = (SELECT MAX(quantity) 
+ 								  FROM products))
+ ORDER BY c.city ASC;
  
  --12
  --List the products whose priceUSD is above the average priceUSD.
@@ -106,6 +129,13 @@
  --13
  --Show the customer name, pid ordered, and the dollars for all customer 
  --orders, sorted by dollars from high to low.
+ SELECT c.name, 
+        o.pid, 
+ 	   o.dollars
+ FROM orders o,
+      customers c
+ WHERE c.cid = o.cid
+ ORDER BY dollars DESC;
  
  --14
  --Show all customer names (in order) and their total ordered, and nothing more.
@@ -116,6 +146,18 @@
  --Show the names of all customers who bought products from agents based in 
  --New York along with the names of the products they ordered, and the names 
  --of the agents who sold it to them.
+ SELECT c.name, 
+        p.name, 
+        a.name,
+ FROM customers c,
+      orders o,
+      products p,
+      agents a
+ WHERE  c.cid = o.cid
+   AND  p.pid = o.pid
+   AND  a.aid = o.aid
+   AND a.city = 'New York'
+ ORDER BY c.name ASC;
  
  --16
  --Write a query to check the accuracy of the dollars column in the Orders table. 
