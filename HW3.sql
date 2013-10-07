@@ -140,11 +140,11 @@ ORDER BY dollars DESC;
 --14
 --Show all customer names (in order) and their total ordered, and nothing more.
 --Use coalesce to avoid showing NULLs.
-
---TODO: figure out what coalesce means.
-SELECT c.name, --sum(o.qty)
-FROM orders o, customers c
+SELECT c.name, coalesce(sum(o.qty), 0) 
+FROM customers c,
+     orders o
 WHERE o.cid = c.cid
+GROUP BY c.name
 ORDER BY c.name ASC;
 
 --15
